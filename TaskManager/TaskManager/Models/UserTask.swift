@@ -8,6 +8,8 @@
 import Foundation
 
 struct UserTask {
+    typealias TakListResponse = [Response]
+    
     struct Response: Codable, Identifiable {
         let id: String
         let title: String
@@ -44,6 +46,22 @@ extension UserTask.Request {
     var jsonData: Data {
         get throws {
             try JSONEncoder().encode(self)
+        }
+    }
+    
+    var jsonObj: [String: Any] {
+        get throws {
+            let data = try jsonData
+            return try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        }
+    }
+    
+    var queryItems: [URLQueryItem] {
+        get throws {
+            let jsonObj = try jsonObj
+            return jsonObj.map {
+                .init(name: $0.key, value: "\($0.value)")
+            }
         }
     }
 }
