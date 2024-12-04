@@ -7,15 +7,23 @@
 
 import Foundation
 
-struct UserTask: Codable, Identifiable {
-    let id: String
-    let title: String
-    let text: String
-    let createdAt: Date
+struct UserTask {
+    struct Response: Codable, Identifiable {
+        let id: String
+        let title: String
+        let text: String
+        let createdAt: Date
+    }
+    
+    struct Request: Codable {
+        let title: String
+        let text: String
+        let createdAt: Date
+    }
 }
 
 extension UserTask {
-    static var mock: UserTask {
+    static var mock: UserTask.Response {
         let titleConfig = RandomStringGenerator.Config(length: 7, options: [.uppercase])
         let textConfig = RandomStringGenerator.Config(length: 512, options: RandomStringGenerator.Option.allCases)
         
@@ -28,6 +36,14 @@ extension UserTask {
         let title = RandomStringGenerator.getNewRandomString(with: titleConfig)
         let text = RandomStringGenerator.getNewRandomString(with: textConfig)
         let createdAt = RandomDateGenerator.getNewRandomDateInRange(from: dateConfig)
-        return UserTask(id: id, title: title, text: text, createdAt: createdAt)
+        return UserTask.Response(id: id, title: title, text: text, createdAt: createdAt)
+    }
+}
+
+extension UserTask.Request {
+    var jsonData: Data {
+        get throws {
+            try JSONEncoder().encode(self)
+        }
     }
 }
